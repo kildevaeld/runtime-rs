@@ -1,0 +1,17 @@
+[package]
+name = "runtime"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+smol_lib = { version = "1", package = "smol", optional = true }
+blocking = { version = "1", optional = true }
+tokio_lib = { version = "1", package = "tokio", features = [ "rt" ], optional = true }
+futures-lite = "1"
+
+[features]
+default = [ "tokio", "smol" ]
+smol = [ "smol_lib", "blocking" ]
+tokio = [ "tokio_lib" ]
