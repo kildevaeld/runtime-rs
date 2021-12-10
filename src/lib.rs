@@ -2,7 +2,7 @@ use std::{future::Future, pin::Pin};
 
 pub type BoxFuture<'a, O> = Pin<Box<dyn Future<Output = O> + 'a>>;
 
-pub trait Runtime {
+pub trait Runtime: Send + Sync {
     fn spawn<F: Future + 'static + Send>(&self, future: F)
     where
         F::Output: Send;
