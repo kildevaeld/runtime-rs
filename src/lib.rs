@@ -1,6 +1,6 @@
 // mod backend;
 
-use std::{future::Future, pin::Pin};
+use std::{future::Future, pin::Pin, sync::Arc};
 
 pub type BoxFuture<'a, O> = Pin<Box<dyn Future<Output = O> + Send + 'a>>;
 
@@ -17,6 +17,33 @@ pub trait Runtime: Send + Sync {
     fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
     where
         F::Output: Send;
+}
+
+impl<T> Runtime for Arc<T>
+where
+    T: Runtime,
+{
+    fn spawn<F: Future + 'static + Send>(&self, future: F)
+    where
+        F::Output: Send,
+    {
+        (&**self).spawn(future)
+    }
+
+    fn unblock<R, F>(&self, ret: F) -> BoxFuture<'static, R>
+    where
+        F: FnOnce() -> R + Send + 'static,
+        R: Send + 'static,
+    {
+        (&**self).unblock(ret)
+    }
+
+    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
+    where
+        F::Output: Send,
+    {
+        (&**self).block_on(future)
+    }
 }
 
 #[cfg(feature = "smol")]
