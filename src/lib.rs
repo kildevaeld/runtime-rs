@@ -14,9 +14,7 @@ pub trait Runtime: Send + Sync {
         F: FnOnce() -> R + Send + 'static,
         R: Send + 'static;
 
-    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
-    where
-        F::Output: Send;
+    fn block_on<F: Future>(&self, future: F) -> F::Output;
 }
 
 impl<T> Runtime for Arc<T>
@@ -38,10 +36,7 @@ where
         (&**self).unblock(ret)
     }
 
-    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
-    where
-        F::Output: Send,
-    {
+    fn block_on<F: Future>(&self, future: F) -> F::Output {
         (&**self).block_on(future)
     }
 }
@@ -63,10 +58,7 @@ impl<'a> Runtime for smol_lib::Executor<'a> {
         Box::pin(blocking::unblock(ret))
     }
 
-    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
-    where
-        F::Output: Send,
-    {
+    fn block_on<F: Future>(&self, future: F) -> F::Output {
         async_io::block_on(future)
     }
 }
@@ -92,10 +84,7 @@ impl Runtime for SmolGlobalRuntime {
         Box::pin(blocking::unblock(ret))
     }
 
-    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
-    where
-        F::Output: Send,
-    {
+    fn block_on<F: Future>(&self, future: F) -> F::Output {
         smol_lib::block_on(future)
     }
 }
@@ -124,10 +113,7 @@ impl Runtime for TokioGlobal {
         })
     }
 
-    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
-    where
-        F::Output: Send,
-    {
+    fn block_on<F: Future>(&self, future: F) -> F::Output {
         futures_lite::future::block_on(future)
     }
 }
@@ -153,10 +139,7 @@ impl Runtime for tokio_lib::runtime::Runtime {
         })
     }
 
-    fn block_on<F: Future + 'static + Send>(&self, future: F) -> F::Output
-    where
-        F::Output: Send,
-    {
+    fn block_on<F: Future>(&self, future: F) -> F::Output {
         self.block_on(future)
     }
 }
