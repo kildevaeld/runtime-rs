@@ -43,6 +43,7 @@ impl<'a> Runtime for smol_lib::Executor<'a> {
 }
 
 #[cfg(feature = "smol")]
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub struct SmolGlobalRuntime;
 
 #[cfg(feature = "smol")]
@@ -71,6 +72,7 @@ impl Runtime for SmolGlobalRuntime {
 }
 
 #[cfg(feature = "tokio")]
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub struct TokioGlobal;
 
 #[cfg(feature = "tokio")]
