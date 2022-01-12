@@ -1,20 +1,24 @@
 [package]
-name = "runtime"
-version = "0.1.0"
 edition = "2021"
+name = "brunson"
+version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-futures-lite = { version = "1" }
+async-stream = "0.3"
+async-trait = "0.1"
+futures-lite = {version = "1"}
 
-smol_lib = { version = "1", package = "smol", optional = true }
-blocking = { version = "1", optional = true }
-async-io = { version = "1", optional = true }
+async-io = {version = "1", optional = true}
+blocking = {version = "1", optional = true}
+smol_lib = {version = "1", package = "smol", optional = true}
 
-tokio_lib = { version = "1", package = "tokio", default-features = false, features = [ "rt" ], optional = true }
+async-compat = {version = "0.2", optional = true}
+tokio-lib = {version = "1", package = "tokio", default-features = false, features = ["rt", "net", "fs"], optional = true}
+tokio-stream = {version = "0.1", features = ["fs"], optional = true}
 
 [features]
-default = [  ]
-smol = [ "smol_lib", "blocking", "async-io" ]
-tokio = [ "tokio_lib" ]
+default = []
+smol = ["smol_lib", "blocking", "async-io"]
+tokio = ["tokio-lib", "tokio-stream", "async-compat"]
