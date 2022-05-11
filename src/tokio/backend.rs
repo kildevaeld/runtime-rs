@@ -1,12 +1,23 @@
-use super::{fs::TokioFS, runtime::TokioGlobalRuntime};
-use crate::{Backend, File, Listener, Transport};
+#[cfg(feature = "fs")]
+use super::fs::TokioFS;
+use super::runtime::TokioGlobalRuntime;
+#[cfg(feature = "fs")]
+use crate::File;
+use crate::{Backend, Listener, Transport};
+
 use async_compat::Compat;
 use async_trait::async_trait;
-use futures_lite::{AsyncRead, AsyncSeek, AsyncWrite};
+use futures_lite::{AsyncRead, AsyncWrite};
 use std::{net::SocketAddr, path::PathBuf};
 use tokio_lib::net::{TcpListener, TcpStream};
 #[cfg(unix)]
 use tokio_lib::net::{UnixListener, UnixStream};
+
+#[cfg(feature = "fs")]
+use std::fs::Metadata;
+
+#[cfg(feature = "fs")]
+use futures_lite::AsyncSeek;
 
 pub struct Tokio;
 
@@ -50,6 +61,7 @@ impl Backend for Tokio {
     type UnixListener = UnixListener;
     type Runtime = TokioGlobalRuntime;
 
+    #[cfg(feature = "fs")]
     type FS = TokioFS;
 
     fn runtime() -> Self::Runtime {
@@ -58,5 +70,3 @@ impl Backend for Tokio {
 }
 
 impl<S> Transport for Compat<S> where Self: AsyncRead + AsyncWrite {}
-
-impl<S> File for Compat<S> where Self: AsyncRead + AsyncWrite + AsyncSeek {}

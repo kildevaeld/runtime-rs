@@ -1,7 +1,11 @@
 use crate::{BoxStream, Runtime};
 use async_stream::stream;
 use async_trait::async_trait;
-use futures_lite::{AsyncRead, AsyncSeek, AsyncWrite, Stream};
+use futures_lite::{AsyncRead, AsyncWrite};
+
+#[cfg(feature = "fs")]
+use futures_lite::{AsyncSeek, Stream};
+#[cfg(feature = "fs")]
 use std::{
     fs::{Metadata, OpenOptions},
     io,
@@ -12,7 +16,11 @@ pub trait Transport: AsyncRead + AsyncWrite {
     // fn remote_addr(&self) -> Option<SocketAddr>;
 }
 
-pub trait File: AsyncRead + AsyncWrite + AsyncSeek {}
+#[cfg(feature = "fs")]
+#[async_trait]
+pub trait File: AsyncRead + AsyncWrite + AsyncSeek {
+    async fn metadata(&self) -> Result<Metadata, std::io::Error>;
+}
 
 #[async_trait]
 pub trait Listener: Sized {
@@ -41,12 +49,14 @@ pub trait Listener: Sized {
     }
 }
 
+#[cfg(feature = "fs")]
 #[async_trait]
 pub trait DirEntry: Send {
     fn path(&self) -> PathBuf;
     async fn metadata(&self) -> io::Result<Metadata>;
 }
 
+#[cfg(feature = "fs")]
 #[async_trait]
 pub trait FS: Send + Sync {
     type ReadDir: Stream<Item = Result<Self::DirEntry, io::Error>> + Send;
@@ -67,6 +77,7 @@ pub trait Backend: Sized + Send + Sync {
     // type File: File;
     type Runtime: Runtime;
 
+    #[cfg(feature = "fs")]
     type FS: FS;
 
     fn runtime() -> Self::Runtime;

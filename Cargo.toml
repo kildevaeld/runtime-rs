@@ -15,10 +15,11 @@ blocking = {version = "1", optional = true}
 smol_lib = {version = "1", package = "smol", optional = true}
 
 async-compat = {version = "0.2", optional = true}
-tokio-lib = {version = "1", package = "tokio", default-features = false, features = ["rt", "net", "fs"], optional = true}
+tokio-lib = {version = "1", package = "tokio", default-features = false, features = ["rt", "net"], optional = true}
 tokio-stream = {version = "0.1", features = ["fs"], optional = true}
 
 [features]
-default = []
+default = ["tokio"]
+fs = ["tokio-lib?/fs", "tokio-stream?/fs"]
 smol = ["smol_lib", "blocking", "async-io"]
 tokio = ["tokio-lib", "tokio-stream", "async-compat"]

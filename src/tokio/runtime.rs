@@ -5,7 +5,6 @@ use tokio_lib::task::JoinError;
 #[derive(Clone, Debug, Copy, PartialEq)]
 pub struct TokioGlobalRuntime;
 
-#[cfg(feature = "tokio")]
 impl Runtime for TokioGlobalRuntime {
     type Error = JoinError;
     fn spawn<F: Future + 'static + Send>(&self, future: F)
