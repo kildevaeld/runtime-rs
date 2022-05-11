@@ -1,8 +1,6 @@
 #[cfg(feature = "fs")]
 use super::fs::TokioFS;
 use super::runtime::TokioGlobalRuntime;
-#[cfg(feature = "fs")]
-use crate::File;
 use crate::{Backend, Listener, Transport};
 
 use async_compat::Compat;
@@ -12,12 +10,6 @@ use std::{net::SocketAddr, path::PathBuf};
 use tokio_lib::net::{TcpListener, TcpStream};
 #[cfg(unix)]
 use tokio_lib::net::{UnixListener, UnixStream};
-
-#[cfg(feature = "fs")]
-use std::fs::Metadata;
-
-#[cfg(feature = "fs")]
-use futures_lite::AsyncSeek;
 
 pub struct Tokio;
 

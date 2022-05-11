@@ -8,18 +8,17 @@ use async_compat::Compat;
 use async_trait::async_trait;
 use tokio_stream::wrappers::ReadDirStream;
 
-use crate::{DirEntry, FS, File};
+use crate::{DirEntry, File, FS};
 
 #[async_trait]
 impl File for Compat<tokio_lib::fs::File>
-where
-    Self: AsyncRead + AsyncWrite + AsyncSeek,
+// where
+//     Self: AsyncRead + AsyncWrite + AsyncSeek,
 {
     async fn metadata(&self) -> Result<Metadata, io::Error> {
         self.metadata().await
     }
 }
-
 
 pub struct TokioFS;
 
